@@ -1,5 +1,6 @@
 # DeepSeek Reverse Client
 
+**ANYTHING HAPPENING TO YOUR ACCOUNT ISN'T MY LIABILITY, ALSO PLS CONTRIBUTE LIKE I M SO LAZY SKIPPED MULTIPLE STUFF.**
 A reverse-engineered Python client for DeepSeek AI that bypasses the web interface and provides direct API access with advanced features like deep thinking and web search capabilities.
 
 ## Features
