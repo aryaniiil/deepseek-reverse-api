@@ -1,0 +1,5 @@
+rich
+nodriver
+python-dotenv
+requests
+wasmtime
