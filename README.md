@@ -29,6 +29,10 @@ A reverse-engineered Python client for DeepSeek AI that bypasses the web interfa
 - **Configuration Management**: Advanced settings and preferences system
 
 ## Installation
+Demo:
+
+
+![Demo](https://github.com/aryaniiil/deepseek-reverse-api/raw/main/TutorialForBoomers/output.mp4)
 
 1. Clone the repository:
 ```bash
