@@ -20,7 +20,18 @@ class AuthExtractor:
             await page.sleep(5)
             
             self.config.print_status("Filling in login details...", "cyan")
-            email_input = await page.find('input[placeholder*="email"]', timeout=10)
+            # try multiple selectors for email input
+            email_input = None
+            for selector in ['input[placeholder*="email"]', 'input[type="email"]', 'input[name="email"]']:
+                try:
+                    email_input = await page.find(selector, timeout=3)
+                    break
+                except:
+                    continue
+            
+            if not email_input:
+                raise Exception("Could not find email input field")
+            
             await email_input.send_keys(self.config.DEEPSEEK_EMAIL)
             await page.sleep(1)
             
@@ -28,8 +39,54 @@ class AuthExtractor:
             await password_input.send_keys(self.config.DEEPSEEK_PASSWORD)
             await page.sleep(1)
             
+            self.config.print_status("Looking for login button...", "cyan")
+            # try multiple selectors for login button
+            login_btn = None
+            selectors = [
+                'div[role="button"].ds-sign-up-form__register-button',
+                'button[type="submit"]',
+                'div[role="button"]',
+                'button:contains("Sign in")',
+                'button:contains("Login")',
+                '.login-button',
+                '.sign-in-button',
+                'button',
+                '[role="button"]'
+            ]
+            
+            for selector in selectors:
+                try:
+                    login_btn = await page.find(selector, timeout=2)
+                    self.config.print_status(f"Found login button with selector: {selector}", "green")
+                    break
+                except:
+                    self.config.print_status(f"Selector {selector} not found", "yellow")
+                    continue
+            
+            if not login_btn:
+                # try to find any clickable element that might be the login button
+                self.config.print_status("Trying to find any button elements...", "yellow")
+                try:
+                    all_buttons = await page.find_all('button')
+                    self.config.print_status(f"Found {len(all_buttons)} button elements", "cyan")
+                    
+                    all_divs = await page.find_all('div[role="button"]')
+                    self.config.print_status(f"Found {len(all_divs)} div[role=button] elements", "cyan")
+                    
+                    # try the first button we find
+                    if all_buttons:
+                        login_btn = all_buttons[0]
+                        self.config.print_status("Using first button found", "yellow")
+                    elif all_divs:
+                        login_btn = all_divs[0]
+                        self.config.print_status("Using first div[role=button] found", "yellow")
+                except Exception as e:
+                    self.config.print_status(f"Error finding buttons: {e}", "red")
+            
+            if not login_btn:
+                raise Exception("Could not find any login button")
+            
             self.config.print_status("Clicking login button...", "cyan")
-            login_btn = await page.find('div[role="button"].ds-sign-up-form__register-button', timeout=10)
             await login_btn.click()
             
             self.config.print_status(f"Waiting {self.config.AUTH_WAIT_TIME} seconds for login...", "yellow")
